@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Hello World</title>
+  <script src="https://unpkg.com/react@15/dist/react.min.js"></script>
+  <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.js"></script>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+    crossorigin="anonymous">
+
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+    crossorigin="anonymous"></script>
+
+  <style>
+    .feedback-container {
+      position: fixed;
+      bottom: 0;
+      right: 20px;
+      width: 200px;
+      /*border: 1px solid lightseagreen;*/
+      padding: 0;
+      /*margin: 0;*/
+      border-radius: 5px;
+    }
+    
+    .feedback-container .form-group {
+      margin-bottom: 0;
+    }
+    
+    .feedback-container .panel-heading {
+      margin: 0;
+      padding: 0;
+    }
+    
+    .feedback-container .btn-close {
+      background-color: transparent;
+      /*padding: 5px;*/
+    }
+    
+    .feedback-container .panel-body {
+      padding: 5px;
+    }
+    
+    .feedback-container .ta {
+      margin-bottom: 5px;
+    }
+    
+    .feedback-container .str-message {
+      color: #333;
+      font-size: xx-small;
+      vertical-align: middle;
+      line-height: 22px;
+      margin-right: 5px;
+    }
+  </style>
+
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    try{
+
+      class FeedbackForm extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {strValue: '', strMessage: ''};
+          this.handleChange = this.handleChange.bind(this);
+          this.handleSubmit = this.handleSubmit.bind(this);
+        }
+
+        handleChange(event) {
+          this.setState({strValue: event.target.value});
+        }
+
+        handleSubmit(event) {
+          event.preventDefault();
+          if(this.state.strValue.length>0){
+            var options = {
+              url:'/feedback',
+              params: {
+                feedback:this.state.strValue,
+              }
+            }
+            $.when(this.doPostFeedback(options)).then(this.showErrorMessage);
+            this.showErrorMessage();
+            this.setState({strValue: ''});
+          }
+        }
+
+        showErrorMessage(){
+          console.log('err')
+            this.setState({strMessage: 'Error !'});
+        }
+
+        showSuccessMessage(){
+            this.setState({strMessage: 'Error !'});
+        }
+
+        strMessage(){
+          return this.state.strMessage;
+        }
+
+        doPostFeedback(options){
+          return $.ajax({
+            type: "GET",
+            url: options.url,
+            data: options.params,
+          });
+        }
+
+        render() {
+          return (
+            <div className="panel panel-default feedback-container {state.bShowFeedback}">
+              <form className="panel-body collapse in" id="feedback-form">
+                <div className="form-group">
+                  <textarea className="form-control ta"
+                    title="How can we improve this site ?"
+                    placeholder="How can we improve this site ?"
+                    rows="3"
+                    value={this.state.strValue}
+                    onChange={this.handleChange} />
+                  <button onClick={this.handleSubmit}
+                  className="btn btn-xs pull-right"
+                  title="we love to hear from you !"
+                  >
+                  <i className="glyphicon glyphicon-share-alt"></i>
+                  </button>
+                  <span className="str-message pull-right">{this.strMessage()}</span>
+                </div>
+              </form>
+            </div>
+          );
+        }
+      }
+
+      ReactDOM.render(
+        <FeedbackForm />,
+        document.getElementById('root')
+      );
+
+    }
+    catch(e){
+      console.log(e)
+    }
+
+
+    </script> jQuery Sticky (Fixed Position) Sidebar with Bootstrap 3 col-push Problem August 16, 2015 By Aaron Brown 2
+  Comments The Issue It works on desktop browsers, but not iPad or Safari Using jQuery Sticky and Bootstrap 3, a “stuck”
+  sidebar should stay at the defined distance from the top and in the exact place it started to the left/right. However,
+  when using Bootstrap’s column push and pull, a Sticky sidebar breaks. On the iPad, the sidebar jumps to the opposite side
+  of the screen. If you are on an iPad 2 (and maybe other versions) or Safari 5 for Windows (and maybe other versions) you
+  should see the issue happening as you scroll down. Problem Demonstrated Example Problem Fixed Example Details I’ve liked
+  using the jQuery Sticky plugin for any sites I develop that call for a sticky sidebar or header/menu. It is super-simple
+  and effective. So, I was suprised when I recently discovered that it wasn’t working as expected on my iPad 2 or on Safari
+  for Windows (I don’t have a Mac to test out the latest version of Safari). The only time it had an issue was when I had
+  rearranged columns using Bootstrap 3’s column push and pull classes. Whenever I used these, the area I made sticky jumps
+  from within the sidebar column I created using “col-md-3 col-md-pull-9”, to the far right side of the row, as if I had
+  only used “col-md-3” without pulling it back left. The problem seems to only present when there is a rearranged column
+  order using col-md-push and col-md-pull, like:
+
+  <div class="row">
+    <div class="col-md-9 col-md-push-3">
+      ...some content
+    </div>
+    <div class="col-md-3 col-md-pull-9">
+      <div id="stick-container">
+        ...sidebar stuff that jumps from left side to right side on iPad.
+      </div>
+    </div>
+  </div>
+
+  Using Safari’s developer tools menu, it appears that the Bootstrap components are not the issue. The “.col-md-3” that I pulled
+  right stays in place. The “#sidebar-sticky-wrapper” element also stays put. However, the “#sidebar” element to which the
+  Sticky is applied breaks out of those two boxes and appears on the right side of the row, as if its new applied “fixed”
+  positioning is not inheriting the proper “left” or “right” positioning. Confirmed incorrect, unexpected behavior on: Safari
+  5.1.7 for Windows iPad 2 However, everything works as expected when using “typical” column order like:
+
+  <div class="row">
+    <div class="col-md-9">
+      ...some content
+    </div>
+    <div class="col-md-3">
+      <div id="stick-container">
+        ...sidebar stuff that works everywhere.
+      </div>
+    </div>
+  </div>
+
+  Confirmed correct, expected behavior on: Chrome Chrome Developer Tools iPad device mode IE 8 IE 9 IE 10 IE 11 Edge Firefox
+  The Fix Because the issue seems to be based on the Sticky element breaking out of its parent container, which is caused
+  by the application of the “fixed” positioning, I focused on testing combinations of positioning for those parent elements
+  to contain it. In the end, applying a “relative” position to the parent “.row” and “absolute” positioning to the parent
+  “.col-md-3 col-md-pull-9” fixed the issue while keeping it working in all the other browsers. I don’t know why exactly,
+  but it works. Keep in mind that you need to limit the scope of this to only when “Sticky” is applied, otherwise when the
+  Bootrap columns shift, your absolutely positioned element will likely breaking your flow. In this specific case, it meant
+  using a media query at the default “md” break, 992px. My Solution Here is the issue fixed. @media(min-width: 992px){ #main
+  .row{ position:relative; } #main .col-md-pull-9{ position:absolute; } } There are likely more elegant solutions for this–and
+  certainly better explained–but this is what I found after a haphazard poke-and-check methodolgy. Other posts you may enjoy:
+  Website Font Replacement Options Comparison
+</body>
+
+</html>
